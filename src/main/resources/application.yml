@@ -6,6 +6,18 @@ spring:
     password: 123456
     initialization-mode: always
 
+#配置redis
+  redis:
+    host: 39.96.42.61
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 500
+        min-idle: 0
+    lettuce:
+      shutdown-timeout: 0
+
 #配置mybatis配置文件路径
 mybatis:
   config-location: classpath:mybatis/mybatis-config.xml

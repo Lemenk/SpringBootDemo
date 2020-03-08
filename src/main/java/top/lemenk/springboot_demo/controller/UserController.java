@@ -2,9 +2,13 @@ package top.lemenk.springboot_demo.controller;
 
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import top.lemenk.springboot_demo.domain.User;
+import top.lemenk.springboot_demo.service.impl.MyRedisDemoImpl;
 import top.lemenk.springboot_demo.service.impl.UserServiceImpl;
 
 import java.util.List;
@@ -34,7 +38,7 @@ public class UserController {
 
     //根据id查询
     @ApiOperation(value = "获取用户详情",notes = "根据url的id来获取用户基本信息")
-    @GetMapping("user/{id}")
+    @GetMapping("/user/{id}")
     @ApiModelProperty(name = "id",value = "用户ID",example = "1")//@ApiParam("用户id")
     public ResponseEntity<String> getUser(@PathVariable("id") Integer id){
         User user = userService.getUserById(id);
