@@ -1,6 +1,8 @@
 package top.lemenk.springboot_demo.controller;
 
 import io.swagger.annotations.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,14 +24,21 @@ import java.util.List;
 @RestController
 public class UserController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     private UserServiceImpl userService;
 
     //查询所有
     @ApiOperation(value = "获取用户列表",notes = "获取所有用户信息")
     @GetMapping("/users")
-    public List<User> getAllUser(){
-        return userService.getAllUser();
+    public ResponseEntity<List<User>> getAllUser() {
+        try {
+            return ResponseEntity.ok(userService.getAllUser());
+        } catch (Exception e) {
+            LOGGER.info(" 获取所有用户数据异常 " + e.getMessage(), e);
+            return ResponseEntity.status(500).body(userService.getAllUser());
+        }
     }
 
     //根据id查询
@@ -41,6 +50,7 @@ public class UserController {
         if (user != null){
             return ResponseEntity.ok(user.toString());
         }else {
+            LOGGER.info(" 获取所有用户数据异常 ");
             return ResponseEntity.status(500).body("此用户不存在");
         }
     }
@@ -56,9 +66,14 @@ public class UserController {
             @ApiImplicitParam(name = "birthday",value = "生日",dataType = "java.util.Date",paramType = "query",example = "2010/01/01"),
             @ApiImplicitParam(name = "address",value = "住址",dataType = "string",paramType = "query",example="中国北京")
     })
-    public User saveUser(User user){
-        userService.saveUser(user);
-        return user;
+    public ResponseEntity<String> saveUser(User user){
+        try{
+            userService.saveUser(user);
+            return ResponseEntity.ok(user.toString());
+        }catch (Exception e){
+            LOGGER.info(" 获取用户数据 "+e.getMessage(), e);
+            return ResponseEntity.status(500).body("数据错误");
+        }
     }
 
     //更新
@@ -77,6 +92,7 @@ public class UserController {
         if (i == 1){
             return ResponseEntity.ok("更新"+user.getId()+"成功");
         }else {
+            LOGGER.info(" 更新用户数据失败 "+user+"数据错误");
             return ResponseEntity.status(500).body("更新"+user.getId()+"失败");
         }
     }
@@ -85,12 +101,13 @@ public class UserController {
     @ApiOperation(value ="删除用户")
     @ResponseBody
     @DeleteMapping("/user/{id}")
-    @ApiModelProperty(name = "id",value = "用户ID",example = "1")//@ApiParam("用户id")
+    @ApiModelProperty(name = "id",value = "用户ID",example = "1")
     public ResponseEntity<String> deleteUser(@PathVariable("id")Integer id){
         Integer i = userService.deleteUser(id);
         if (i == 1){
             return ResponseEntity.ok("更新用户"+id+"成功");
         }else {
+            LOGGER.info(" 删除用户数据失败 "+"此用户不存在或无权限");
             return ResponseEntity.status(500).body("更新用户"+id+"失败,此用户可能不存在");
         }
     }
